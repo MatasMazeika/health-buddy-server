@@ -1,5 +1,6 @@
 import { Model } from 'sequelize';
 import { UserModel } from './user';
+import { MealModel } from './meals';
 
 const { DataTypes } = require('sequelize');
 const { db } = require('../db');
@@ -25,3 +26,4 @@ NewsfeedModel.init(
 );
 
 NewsfeedModel.belongsTo(UserModel, { foreignKey: 'userId' });
+NewsfeedModel.belongsTo(MealModel, { foreignKey: 'mealId' });
