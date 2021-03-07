@@ -8,57 +8,103 @@ import { LikesModel } from '../models/likes';
 import { getCreatedAgoTimeValue } from '../utils/getCreatedAgoDateKeyValue';
 import { CommentsModel } from '../models/comments';
 import { createdAt } from '../utils/commonModelTypes';
+import { MealModel } from '../models/meals';
+import { MealFoodModel } from '../models/mealFood';
 
 export const getFollowedUsersPosts = asyncWrap(async (req, res) => {
 	const userId = req.user.id;
 
-	const followedUsersIds = await FollowsModel.findAll({
-		where: { userId },
+	const followedUsersIds = (
+		await FollowsModel.findAll({
+			where: { userId },
+			raw: true,
+			attributes: ['id'],
+		})
+	).map((follow) => follow.id);
+
+	const followedPosts = await NewsfeedModel.findAll({
+		where: { userId: followedUsersIds },
+		include: [
+			{
+				model: UserModel,
+				attributes: ['username', 'avatar'],
+			},
+		],
+		attributes: [
+			'id',
+			'text',
+			'user.username',
+			'user.avatar',
+			'createdAt',
+			'mealId',
+		],
+		order: [['createdAt', 'DESC']],
+	});
+	const followedPostIds = followedPosts.map((followedPost) => followedPost.id);
+	const followedPostMealIds = followedPosts
+		.filter((followedPost) => followedPost.mealId)
+		.map((followedPost) => followedPost.mealId);
+
+	const postLikes = await LikesModel.findAll({
+		where: { postId: followedPostIds },
+		include: [
+			{
+				model: UserModel,
+				attributes: ['username'],
+			},
+		],
+		attributes: ['user.username', 'postId'],
 		raw: true,
 	});
 
-	const followedPosts = (await Promise.all(
-		followedUsersIds.map((follow) => NewsfeedModel.findAll({
-			include: [
-				{
-					model: UserModel,
-					attributes: ['username', 'avatar'],
-				},
-			],
-			where: { userId: follow.followedUserId },
-			raw: true,
-			attributes: ['id', 'text', 'user.username', 'user.avatar', 'createdAt'],
-			order: [['createdAt', 'DESC']],
-		})),
-	)).flat();
+	const postComments = await CommentsModel.findAll({
+		where: { postId: followedPostIds },
+		include: [
+			{
+				model: UserModel,
+				attributes: ['username'],
+			},
+		],
+		attributes: [
+			'user.username',
+			'postId',
+			'user.avatar',
+			'comment',
+			'createdAt',
+		],
+		raw: true,
+	});
 
-	const postLikes = (await Promise.all(
-		followedPosts.map(async (post) => LikesModel.findAll({
-			include: [
-				{
-					model: UserModel,
-					attributes: ['username'],
-				},
-			],
-			attributes: ['user.username', 'postId'],
-			where: { postId: post.id },
-			raw: true,
-		})),
-	)).flat();
-
-	const postComments = (await Promise.all(
-		followedPosts.map(async (post) => CommentsModel.findAll({
-			include: [
-				{
-					model: UserModel,
-					attributes: ['username'],
-				},
-			],
-			attributes: ['user.username', 'postId', 'user.avatar', 'comment', 'createdAt'],
-			where: { postId: post.id },
-			raw: true,
-		})),
-	)).flat();
+	const postMeals = await MealFoodModel.findAll({
+		include: [
+			{
+				model: MealModel,
+				attributes: [
+					'mealName',
+					'id',
+					'totalCarbs',
+					'totalProtein',
+					'totalFat',
+					'totalCalories',
+				],
+			},
+		],
+		where: {
+			mealId: followedPostMealIds,
+		},
+		attributes: [
+			'foodId',
+			'amount',
+			'unit',
+			'carbs',
+			'calories',
+			'fat',
+			'protein',
+			'name',
+		],
+		raw: true,
+	});
+	console.log(postMeals);
 
 	const postCommentsWithCreatedAgo = postComments.map((comment) => {
 		const constCreatedTime = DateTime.fromJSDate(comment.createdAt);
@@ -81,10 +127,40 @@ export const getFollowedUsersPosts = asyncWrap(async (req, res) => {
 		};
 	});
 
-	const addLikesToPost = followedPosts.reduce((acc, curr) => {
-		const allPostLikes = postLikes.filter((like) => like && like.postId === curr.id);
-		const allPostComments = postCommentsWithCreatedAgo
-			.filter((comment) => comment && comment.postId === curr.id);
+	const addPostDataToPosts = followedPosts.reduce((acc, curr) => {
+		const allPostLikes = postLikes.filter(
+			(like) => like && like.postId === curr.id,
+		);
+		const allPostComments = postCommentsWithCreatedAgo.filter(
+			(comment) => comment && comment.postId === curr.id,
+		);
+		const postMeal = postMeals.filter(
+			(meal) => meal['meal.id'] === curr.mealId,
+		);
+		const constructPostMealResponse = postMeal.reduce(
+			(newPostMeal, meal) => ({
+				mealName: meal['meal.mealName'],
+				totalCalories: meal['meal.totalCalories'],
+				totalCarbs: meal['meal.totalCarbs'],
+				totalProtein: meal['meal.totalProtein'],
+				totalFat: meal['meal.totalFat'],
+				totalAmount: meal['meal.totalAmount'],
+				mealFoods: [
+					...newPostMeal.mealFoods,
+					{
+						foodId: meal.foodId,
+						amount: meal.amount,
+						unit: meal.unit,
+						carbs: meal.carbs,
+						calories: meal.calories,
+						fat: meal.fat,
+						protein: meal.protein,
+						name: meal.name,
+					},
+				],
+			}),
+			{ mealFoods: [] },
+		);
 
 		const constCreatedTime = DateTime.fromJSDate(curr.createdAt);
 		const timeNow = DateTime.now();
@@ -110,23 +186,24 @@ export const getFollowedUsersPosts = asyncWrap(async (req, res) => {
 				createdAgo: getCreatedAgoTimeValue(diffInMonths),
 				likes: allPostLikes || [],
 				comments: allPostComments || [],
+				meal: constructPostMealResponse,
 			},
 		];
 	}, []);
 
-	res.status(200).json(addLikesToPost);
+	res.status(200).json(addPostDataToPosts);
 });
 
 export const addPost = asyncWrap(async (req, res) => {
 	const userId = req.user.id;
 	const { text } = req.body;
 
-	const createPost = (await NewsfeedModel.create(
-		{
+	const createPost = (
+		await NewsfeedModel.create({
 			text,
 			userId,
-		},
-	)).toJSON();
+		})
+	).toJSON();
 
 	res.status(200).json({
 		text: createPost.text,
@@ -189,9 +266,12 @@ export const editComment = asyncWrap(async (req, res) => {
 	const userId = req.user.id;
 	const { commentId, comment } = req.body;
 
-	await CommentsModel.update({
-		comment,
-	}, { where: { id: commentId, userId } });
+	await CommentsModel.update(
+		{
+			comment,
+		},
+		{ where: { id: commentId, userId } },
+	);
 
 	res.status(200).json({ msg: 'ok' });
 });
