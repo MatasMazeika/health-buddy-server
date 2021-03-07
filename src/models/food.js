@@ -15,22 +15,21 @@ FoodModel.init(
 		name: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: true,
 		},
 		carbs: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		fat: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		protein: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		calories: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		unit: {
@@ -38,7 +37,7 @@ FoodModel.init(
 			allowNull: false,
 		},
 		amount: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 	},
