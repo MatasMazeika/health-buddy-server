@@ -19,6 +19,10 @@ import { LikesModel } from './src/models/likes';
 import { CommentsModel } from './src/models/comments';
 import newsfeedController from './src/controlers/newsfeedController';
 import { FollowsModel } from './src/models/follows';
+import { MealFoodModel } from './src/models/mealFood';
+import { MealModel } from './src/models/meals';
+import mealsController from './src/controlers/mealsController';
+import food from './src/food.json';
 
 require('dotenv').config();
 
@@ -69,6 +73,12 @@ app.use(
 	newsfeedController,
 );
 
+app.use(
+	'/meals',
+	passport.authenticate('jwt', { session: false }),
+	mealsController,
+);
+
 app.listen(port, async () => {
 	console.log(`Example app listening at http://localhost:${port}`);
 	await db.authenticate();
@@ -104,6 +114,24 @@ app.listen(port, async () => {
 		unit: 'gram',
 		amount: 100,
 	});
+	await FoodModel.create({
+		name: 'Spinach',
+		carbs: 15,
+		fat: 0,
+		protein: 0,
+		calories: 50,
+		unit: 'gram',
+		amount: 100,
+	});
+	await FoodModel.create({
+		name: 'Aligator meat',
+		carbs: 15,
+		fat: 12,
+		protein: 50,
+		calories: 50,
+		unit: 'gram',
+		amount: 100,
+	});
 	await ConsumedFoodModel.create({
 		userId: 1,
 		foodId: 1,
@@ -133,12 +161,98 @@ app.listen(port, async () => {
 		repetitions: 10,
 		weight: 80,
 	});
+	await MealModel.create({
+		userId: 1,
+		mealName: 'Aligator chicken sandwich',
+		totalCalories: 300,
+		totalCarbs: 200,
+		totalProtein: 150,
+		totalFat: 200,
+		totalAmount: 400,
+	});
+	await MealModel.create({
+		userId: 1,
+		mealName: 'Aligator turbo chicken sandwich',
+		totalCalories: 300,
+		totalCarbs: 200,
+		totalProtein: 150,
+		totalFat: 200,
+		totalAmount: 500,
+	});
+	await MealFoodModel.create({
+		foodId: 1,
+		mealId: 1,
+		name: 'Aligator meat',
+		carbs: 21,
+		fat: 16.8,
+		protein: 70,
+		calories: 100,
+		unit: 'gram',
+		amount: 150,
+	});
+	await MealFoodModel.create({
+		foodId: 2,
+		mealId: 1,
+		name: 'Chicken',
+		carbs: 7.5,
+		fat: 0,
+		protein: 25,
+		calories: 0,
+		unit: 'gram',
+		amount: 50,
+	});
+	await MealFoodModel.create({
+		foodId: 3,
+		mealId: 1,
+		name: 'Spinach',
+		carbs: 7.5,
+		fat: 0,
+		protein: 18,
+		calories: 18,
+		unit: 'gram',
+		amount: 140,
+	});
+	await MealFoodModel.create({
+		foodId: 1,
+		mealId: 2,
+		name: 'Aligator meat turbo',
+		carbs: 21,
+		fat: 16.8,
+		protein: 70,
+		calories: 100,
+		unit: 'gram',
+		amount: 150,
+	});
+	await MealFoodModel.create({
+		foodId: 2,
+		mealId: 2,
+		name: 'Chicken beat',
+		carbs: 7.5,
+		fat: 0,
+		protein: 25,
+		calories: 0,
+		unit: 'gram',
+		amount: 50,
+	});
+	await MealFoodModel.create({
+		foodId: 3,
+		mealId: 2,
+		name: 'Spinach salad',
+		carbs: 7.5,
+		fat: 0,
+		protein: 18,
+		calories: 18,
+		unit: 'gram',
+		amount: 140,
+	});
 	await NewsfeedModel.create({
 		userId: 1,
+		mealId: 1,
 		text: 'Look at my amazing progress WOW!',
 	});
 	await NewsfeedModel.create({
 		userId: 2,
+		mealId: 2,
 		text: 'My posterino!',
 	});
 	await NewsfeedModel.create({
