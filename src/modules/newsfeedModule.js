@@ -196,19 +196,58 @@ export const getFollowedUsersPosts = asyncWrap(async (req, res) => {
 
 export const addPost = asyncWrap(async (req, res) => {
 	const userId = req.user.id;
-	const { text } = req.body;
+	const { text, mealId } = req.body;
 
 	const createPost = (
 		await NewsfeedModel.create({
 			text,
 			userId,
+			mealId,
 		})
 	).toJSON();
+
+	const addedMeal = await MealFoodModel.findAll({
+		include: [
+			{
+				model: MealModel,
+				where: { id: mealId },
+			},
+		],
+		where: { mealId },
+		raw: true,
+	});
+
+	const constructPostMealResponse = addedMeal.reduce(
+		(newPostMeal, meal) => ({
+			mealName: meal['meal.mealName'],
+			totalCalories: meal['meal.totalCalories'],
+			totalCarbs: meal['meal.totalCarbs'],
+			totalProtein: meal['meal.totalProtein'],
+			totalFat: meal['meal.totalFat'],
+			totalAmount: meal['meal.totalAmount'],
+			mealFoods: [
+				...newPostMeal.mealFoods,
+				{
+					foodId: meal.foodId,
+					amount: meal.amount,
+					unit: meal.unit,
+					carbs: meal.carbs,
+					calories: meal.calories,
+					fat: meal.fat,
+					protein: meal.protein,
+					name: meal.name,
+				},
+			],
+		}),
+		{ mealFoods: [] },
+	);
 
 	res.status(200).json({
 		text: createPost.text,
 		id: createPost.id,
 		likes: [],
+		comments: [],
+		meal: constructPostMealResponse,
 		createdAgo: { seconds: 'now' },
 	});
 });

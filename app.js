@@ -10,10 +10,10 @@ import consumedFoodController from './src/controlers/consumedFoodController';
 import { FoodModel } from './src/models/food';
 import { ConsumedFoodModel } from './src/models/consumedFood';
 import { WorkoutModel } from './src/models/workout';
-import { ExerciseModel } from './src/models/exercise';
+import { DailyExerciseModel } from './src/models/dailyExercise';
 import userDataController from './src/controlers/userDataController';
 import { UserCaloriesModel } from './src/models/userCalories';
-import exerciseController from './src/controlers/exerciseController';
+import dailyExerciseController from './src/controlers/dailyExerciseController';
 import { NewsfeedModel } from './src/models/newsFeed';
 import { LikesModel } from './src/models/likes';
 import { CommentsModel } from './src/models/comments';
@@ -22,7 +22,9 @@ import { FollowsModel } from './src/models/follows';
 import { MealFoodModel } from './src/models/mealFood';
 import { MealModel } from './src/models/meals';
 import mealsController from './src/controlers/mealsController';
+import { DailyExerciseSetModel } from './src/models/DailyExerciseSet';
 import food from './src/food.json';
+import { initElastic } from './src/elastic';
 
 require('dotenv').config();
 
@@ -64,7 +66,7 @@ app.use(
 app.use(
 	'/exercise',
 	passport.authenticate('jwt', { session: false }),
-	exerciseController,
+	dailyExerciseController,
 );
 
 app.use(
@@ -79,10 +81,7 @@ app.use(
 	mealsController,
 );
 
-app.listen(port, async () => {
-	console.log(`Example app listening at http://localhost:${port}`);
-	await db.authenticate();
-
+const resetDb = async () => {
 	await db.sync({ force: true });
 	await UserModel.create({
 		email: 'matas@matukas.com',
@@ -123,15 +122,25 @@ app.listen(port, async () => {
 		unit: 'gram',
 		amount: 100,
 	});
-	await FoodModel.create({
-		name: 'Aligator meat',
-		carbs: 15,
-		fat: 12,
-		protein: 50,
-		calories: 50,
-		unit: 'gram',
-		amount: 100,
-	});
+
+	for (let i = 0; i < food.length; i += 1) {
+		const {
+			produktas: name, kal: calories, ang: carbs, rie: fat, bal: protein,
+		} = food[
+			i
+		].Product;
+		// eslint-disable-next-line no-await-in-loop
+		await FoodModel.create({
+			name,
+			carbs,
+			fat,
+			calories,
+			protein,
+			unit: 'gram',
+			amount: 100,
+		});
+	}
+
 	await ConsumedFoodModel.create({
 		userId: 1,
 		foodId: 1,
@@ -147,19 +156,31 @@ app.listen(port, async () => {
 	await WorkoutModel.create({
 		name: 'Upper body',
 	});
-	await ExerciseModel.create({
+	await DailyExerciseModel.create({
+		name: 'Bench press',
+		userId: 1,
+	});
+	await DailyExerciseSetModel.create({
+		name: 'Bench press',
+		set: 1,
+		repetitions: 10,
+		weight: 80,
+		dailyExerciseId: 1,
+	});
+	await DailyExerciseSetModel.create({
+		name: 'Bench press',
+		set: 2,
+		repetitions: 10,
+		weight: 80,
+		dailyExerciseId: 1,
+	});
+	await DailyExerciseSetModel.create({
 		name: 'Bench press',
 		workoutId: 1,
-		set: 1,
+		set: 3,
 		repetitions: 10,
-		weight: 80,
-	});
-	await ExerciseModel.create({
-		name: 'Pull ups',
-		workoutId: 1,
-		set: 1,
-		repetitions: 10,
-		weight: 80,
+		weight: 65,
+		dailyExerciseId: 1,
 	});
 	await MealModel.create({
 		userId: 1,
@@ -302,4 +323,13 @@ app.listen(port, async () => {
 		followedUserId: 1,
 		userId: 1,
 	});
+	await WorkoutModel.create({
+		userId: 1,
+		name: 'Chest and biceps',
+	});
+};
+
+app.listen(port, async () => {
+	console.log(`Example app listening at http://localhost:${port}`);
+	await db.authenticate();
 });

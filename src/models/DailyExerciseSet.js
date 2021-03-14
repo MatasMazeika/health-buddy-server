@@ -1,21 +1,17 @@
 import { Model } from 'sequelize';
-import { WorkoutModel } from './workout';
+import { DailyExerciseModel } from './dailyExercise';
 
 const { DataTypes } = require('sequelize');
 const { db } = require('../db');
 
-export class ExerciseModel extends Model {}
+export class DailyExerciseSetModel extends Model {}
 
-ExerciseModel.init(
+DailyExerciseSetModel.init(
 	{
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true,
-		},
-		name: {
-			type: DataTypes.TEXT,
-			allowNull: false,
 		},
 		set: {
 			type: DataTypes.SMALLINT,
@@ -34,8 +30,8 @@ ExerciseModel.init(
 	},
 	{
 		sequelize: db,
-		modelName: 'exercise',
+		modelName: 'daily_exercise_set',
 	},
 );
 
-ExerciseModel.belongsTo(WorkoutModel, { foreignKey: 'workoutId' });
+DailyExerciseSetModel.belongsTo(DailyExerciseModel, { foreignKey: 'dailyExerciseId' });

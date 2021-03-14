@@ -23,19 +23,19 @@ ConsumedFoodModel.init(
 			allowNull: false,
 		},
 		carbs: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		fat: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		protein: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		calories: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 		unit: {
@@ -43,7 +43,7 @@ ConsumedFoodModel.init(
 			allowNull: false,
 		},
 		amount: {
-			type: DataTypes.SMALLINT,
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 	},

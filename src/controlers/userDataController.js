@@ -5,6 +5,7 @@ import { UserCaloriesModel } from '../models/userCalories';
 import { getUserConsumedFoodByDate } from '../modules/consumedFoodModule';
 import { uploadFile } from '../modules/awsModule';
 import { UserModel } from '../models/user';
+import { getDailyExercisesByDate } from '../modules/exerciseModule';
 
 const userDataController = express.Router();
 
@@ -29,6 +30,7 @@ userDataController.post(
 			startDate,
 			endDate,
 		});
+		const dailyExercises = await getDailyExercisesByDate({ userId, startDate, endDate });
 
 		res.status(200).json({
 			...userData,
@@ -36,6 +38,7 @@ userDataController.post(
 			avatar,
 			email,
 			username,
+			dailyExercises,
 		});
 	}),
 );

@@ -116,4 +116,28 @@ consumedFoodController.post(
 	}),
 );
 
+consumedFoodController.post(
+	'/multiple',
+	[
+		body('foods.*.protein', 'Protein is required').trim().isNumeric(),
+		body('foods.*.carbs', 'Carbs is required').trim().isNumeric(),
+		body('foods.*.fat', 'Fat is required').trim().isNumeric(),
+		body('foods.*.calories', 'Calories is required').trim().isNumeric(),
+		body('foods.*.unit', 'Unit is required').trim().isString(),
+		body('foods.*.amount', 'Amount is required').trim().isNumeric(),
+		body('foods.*.foodId', 'Food id is required').exists(),
+		checkValidation,
+	],
+	asyncWrap(async (req, res) => {
+		const { foods } = req.body;
+		const userId = req.user.id;
+
+		const addUserIdToConsumedFood = foods.map((food) => ({ ...food, userId }));
+
+		const consumedFoods = await ConsumedFoodModel.bulkCreate(addUserIdToConsumedFood);
+
+		res.status(200).json({ consumedFoods });
+	}),
+);
+
 export default consumedFoodController;
