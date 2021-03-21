@@ -7,6 +7,8 @@ COPY package*.json ./
 RUN npm config set unsafe-perm true
 RUN npm ci
 RUN npm install -g pm2
+RUN npm install -g @babel/runtime
+RUN npm install -g @babel/plugin-transform-runtime
 RUN npm install --global @babel/cli
 RUN npm install --global @babel/core
 
