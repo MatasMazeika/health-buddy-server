@@ -14,7 +14,6 @@ const foodController = express.Router();
  */
 foodController.get(
 	'/',
-	[passport.authenticate('jwt', { session: false })],
 	asyncWrap(async (req, res) => {
 		const { search: searchText } = req.query;
 
