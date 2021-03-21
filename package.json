@@ -5,11 +5,14 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "nodemon -r esm app.js"
+		"start": "npm run build && cp ./src/food.json ./dist && node dist/app.js",
+		"build": "babel src -d dist"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@babel/plugin-transform-runtime": "^7.13.10",
+		"@babel/runtime": "^7.13.10",
 		"@elastic/elasticsearch": "^7.11.0",
 		"aws-sdk": "^2.848.0",
 		"body-parser": "^1.19.0",
@@ -33,16 +36,16 @@
 		"round-to": "^5.0.0",
 		"sequelize": "^6.5.0",
 		"sha256": "^0.2.0",
-		"sharp": "^0.27.1",
+		"sharp": "^0.27.2",
 		"winston": "^3.3.3"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.12.10",
+		"@babel/core": "^7.13.10",
+		"@babel/node": "^7.13.10",
+		"@babel/preset-env": "^7.13.10",
 		"eslint": "^7.19.0",
 		"eslint-config-airbnb": "^18.2.1",
 		"eslint-plugin-import": "^2.22.1",
-		"eslint-plugin-jsx-a11y": "^6.4.1",
-		"eslint-plugin-react": "^7.22.0",
-		"eslint-plugin-react-hooks": "^1.7.0"
+		"eslint-plugin-jsx-a11y": "^6.4.1"
 	}
 }
