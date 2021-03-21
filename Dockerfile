@@ -9,6 +9,7 @@ RUN npm ci
 RUN npm install -g pm2
 RUN npm install --global @babel/cli
 RUN npm install --global @babel/core
+RUN npm install --global @babel/plugin-transform-runtime
 
 COPY . ./
 
