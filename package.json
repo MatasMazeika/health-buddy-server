@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@babel/runtime": "^7.13.10",
 		"@elastic/elasticsearch": "^7.11.0",
+		"@babel/plugin-transform-runtime": "^7.13.10",
 		"aws-sdk": "^2.848.0",
 		"body-parser": "^1.19.0",
 		"cors": "^2.8.5",
@@ -41,7 +42,6 @@
 	"devDependencies": {
 		"@babel/core": "^7.13.10",
 		"@babel/node": "^7.13.10",
-		"@babel/plugin-transform-runtime": "^7.13.10",
 		"@babel/preset-env": "^7.13.10",
 		"eslint": "^7.19.0",
 		"eslint-config-airbnb": "^18.2.1",
