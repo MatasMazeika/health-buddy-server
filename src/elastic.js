@@ -4,7 +4,7 @@ import { FoodModel } from './models/food';
 import { MealModel } from './models/meals';
 
 export const esClient = elasticsearch.Client({
-	host: 'http://host.docker.internal:9200',
+	host: 'http://172.17.0.1:9200',
 });
 
 const createFoodIndex = () => {
