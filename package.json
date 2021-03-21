@@ -5,11 +5,13 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "nodemon -r esm app.js"
+		"start": "npm run build && node dist/app.js",
+		"build": "babel src -d dist"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@babel/runtime": "^7.13.10",
 		"@elastic/elasticsearch": "^7.11.0",
 		"aws-sdk": "^2.848.0",
 		"body-parser": "^1.19.0",
@@ -37,7 +39,10 @@
 		"winston": "^3.3.3"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.12.10",
+		"@babel/core": "^7.13.10",
+		"@babel/node": "^7.13.10",
+		"@babel/plugin-transform-runtime": "^7.13.10",
+		"@babel/preset-env": "^7.13.10",
 		"eslint": "^7.19.0",
 		"eslint-config-airbnb": "^18.2.1",
 		"eslint-plugin-import": "^2.22.1",
