@@ -2,34 +2,34 @@ import cors from 'cors';
 import passport from 'passport';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
-import userController from './src/controlers/userController';
-import { applyPassportStrategy } from './src/middleware/passport';
-import { UserModel } from './src/models/user';
-import foodController from './src/controlers/foodController';
-import consumedFoodController from './src/controlers/consumedFoodController';
-import { FoodModel } from './src/models/food';
-import { ConsumedFoodModel } from './src/models/consumedFood';
-import { WorkoutModel } from './src/models/workout';
-import { DailyExerciseModel } from './src/models/dailyExercise';
-import userDataController from './src/controlers/userDataController';
-import { UserCaloriesModel } from './src/models/userCalories';
-import dailyExerciseController from './src/controlers/dailyExerciseController';
-import { NewsfeedModel } from './src/models/newsFeed';
-import { LikesModel } from './src/models/likes';
-import { CommentsModel } from './src/models/comments';
-import newsfeedController from './src/controlers/newsfeedController';
-import { FollowsModel } from './src/models/follows';
-import { MealFoodModel } from './src/models/mealFood';
-import { MealModel } from './src/models/meals';
-import mealsController from './src/controlers/mealsController';
-import { DailyExerciseSetModel } from './src/models/DailyExerciseSet';
-import food from './src/food.json';
-import { initElastic } from './src/elastic';
+import userController from './controlers/userController';
+import { applyPassportStrategy } from './middleware/passport';
+import { UserModel } from './models/user';
+import foodController from './controlers/foodController';
+import consumedFoodController from './controlers/consumedFoodController';
+import { FoodModel } from './models/food';
+import { ConsumedFoodModel } from './models/consumedFood';
+import { WorkoutModel } from './models/workout';
+import { DailyExerciseModel } from './models/dailyExercise';
+import userDataController from './controlers/userDataController';
+import { UserCaloriesModel } from './models/userCalories';
+import dailyExerciseController from './controlers/dailyExerciseController';
+import { NewsfeedModel } from './models/newsFeed';
+import { LikesModel } from './models/likes';
+import { CommentsModel } from './models/comments';
+import newsfeedController from './controlers/newsfeedController';
+import { FollowsModel } from './models/follows';
+import { MealFoodModel } from './models/mealFood';
+import { MealModel } from './models/meals';
+import mealsController from './controlers/mealsController';
+import { DailyExerciseSetModel } from './models/DailyExerciseSet';
+import food from './food.json';
+import { initElastic } from './elastic';
 
 require('dotenv').config();
 
 const express = require('express');
-const { db } = require('./src/db');
+const { db } = require('./db');
 
 const app = express();
 const port = 3000;
@@ -88,14 +88,16 @@ const resetDb = async () => {
 		password:
 			'653def9360397209d2e47ec9b37f568a6a43010f96a8a2965509a79765b9939c',
 		username: 'matukasklasi',
-		avatar: 'https://healthbuddyusesrimages.s3.eu-central-1.amazonaws.com/cordelia.jpg',
+		avatar:
+			'https://healthbuddyusesrimages.s3.eu-central-1.amazonaws.com/cordelia.jpg',
 	});
 	await UserModel.create({
 		email: 'matas@john.com',
 		password:
 			'653def9360397209d2e47ec9b37f568a6a43010f96a8a2965509a79765b9939c',
 		username: 'matukdsadklasi',
-		avatar: 'https://healthbuddyusesrimages.s3.eu-central-1.amazonaws.com/_114587591_gettyimages-676894393.jpg',
+		avatar:
+			'https://healthbuddyusesrimages.s3.eu-central-1.amazonaws.com/_114587591_gettyimages-676894393.jpg',
 	});
 	await UserCaloriesModel.create({
 		carbs: 255,
@@ -125,10 +127,12 @@ const resetDb = async () => {
 
 	for (let i = 0; i < food.length; i += 1) {
 		const {
-			produktas: name, kal: calories, ang: carbs, rie: fat, bal: protein,
-		} = food[
-			i
-		].Product;
+			produktas: name,
+			kal: calories,
+			ang: carbs,
+			rie: fat,
+			bal: protein,
+		} = food[i].Product;
 		// eslint-disable-next-line no-await-in-loop
 		await FoodModel.create({
 			name,
