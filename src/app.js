@@ -48,10 +48,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/user', userController);
-app.use(
-	'/food',
-	foodController,
-);
+app.use('/food', foodController);
 app.use(
 	'/consumed-food',
 	passport.authenticate('jwt', { session: false }),
@@ -339,4 +336,6 @@ app.listen(port, async () => {
 	console.log('Example app 123');
 	console.log('Example app 123');
 	await db.authenticate();
+	await resetDb();
+	initElastic();
 });
