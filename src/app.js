@@ -50,7 +50,6 @@ app.use(bodyParser.json());
 app.use('/user', userController);
 app.use(
 	'/food',
-	passport.authenticate('jwt', { session: false }),
 	foodController,
 );
 app.use(
