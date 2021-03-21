@@ -337,5 +337,6 @@ app.listen(port, async () => {
 	console.log(`Example app listening at http://localhost:${port}`);
 	console.log('Example app');
 	console.log('Example app 123');
+	console.log('Example app 123');
 	await db.authenticate();
 });
